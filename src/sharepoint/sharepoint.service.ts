@@ -28,7 +28,7 @@ export class SharepointService {
         'Content-Type': file.mimetype,
       },
     });
-
+    console.log(response.data)
     return response.data;
   }
 }
