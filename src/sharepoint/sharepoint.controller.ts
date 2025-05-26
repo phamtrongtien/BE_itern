@@ -1,6 +1,7 @@
-import { Controller, Post, UploadedFile, UseInterceptors, Body, BadRequestException } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { SharepointService } from './sharepoint.service';
+// sharepoint.controller.ts
+import { Controller, Post, UploadedFiles, UseInterceptors, Body, BadRequestException } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { SharepointService, UploadResult } from './sharepoint.service';
 import { memoryStorage } from 'multer';
 
 @Controller('sharepoint')
@@ -8,20 +9,20 @@ export class SharepointController {
   constructor(private readonly spService: SharepointService) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
-  async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
+  @UseInterceptors(FilesInterceptor('file', 10, { storage: memoryStorage() }))
+  async uploadFiles(
+    @UploadedFiles() files: Express.Multer.File[],
     @Body('accessToken') accessToken: string,
-  ) {
-    if (!accessToken) {
-      throw new BadRequestException('Access token is required');
-    }
+  ): Promise<UploadResult[]> {
+    if (!accessToken) throw new BadRequestException('Access token is required');
+    if (!files || files.length === 0) throw new BadRequestException('At least one file is required');
 
-    if (!file) {
-      throw new BadRequestException('File is required');
+    const results: UploadResult[] = [];
+    for (const file of files) {
+      const res = await this.spService.uploadFile(file, accessToken);
+      results.push(res);
     }
-
-    const result = await this.spService.uploadFile(file, accessToken);
-    return result;
+    console.log(results)
+    return results;
   }
 }
