@@ -31,4 +31,13 @@ export class TasksService {
     await this.taskRepository.removeAndFlush(task);
     return true;
   }
+  async toggleCompleted(id: string): Promise<Task>{
+    const task = await this.taskRepository.findOne(id);
+    if (!task) {
+      throw new Error('Task not found');
+    }
+    task.completed = !task.completed;
+    await this.taskRepository.persistAndFlush(task);
+    return task;
+  }
 }
