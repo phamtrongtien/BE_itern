@@ -1,11 +1,17 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { TasksService } from './tasks.service';
+import { Task } from '../entities/task.entity';
+import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { TasksController } from './tasks.controller';
-import { Task, TaskSchema } from '../schema/tasks.schema';
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }])],
+  imports: [MikroOrmModule.forFeature([Task])],
   controllers: [TasksController],
-  providers: [TasksService],
+  providers: [{
+    provide: EntityRepository,
+    useFactory: (em: EntityManager) => em.getRepository(Task),
+    inject: [EntityManager],
+  },TasksService],
+  exports: [TasksService],
 })
 export class TasksModule {}

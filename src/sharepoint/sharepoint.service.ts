@@ -5,7 +5,6 @@ import axios from 'axios';
 export type UploadResult =
   | { success: true; data: any }
   | { success: false; error: string; fileName: string };
-
 @Injectable()
 export class SharepointService {
   private siteDomain = '1work.sharepoint.com';

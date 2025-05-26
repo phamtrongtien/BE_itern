@@ -3,10 +3,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { HelloModule } from './hello/hello.module';
 import { SharepointModule } from './sharepoint/sharepoint.module';
 import { TasksModule } from './tasks/tasks.module';
-
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import mikroOrmConfig from './mikro-orm.config';
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/Be_intern'),
+    MikroOrmModule.forRoot(mikroOrmConfig),
     HelloModule,
     SharepointModule,
     TasksModule,
